@@ -1,10 +1,11 @@
 package nsqsend
 
 import (
-	"dthandler/utils"
 	"errors"
 	"fmt"
 	"log"
+	
+	"github.com/KerwinKoo/utils"
 )
 
 // SendToNSQ send order to NSQ server
