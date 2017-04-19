@@ -2,6 +2,9 @@ package utils
 
 import (
 	"bytes"
+	"errors"
+
+	"strings"
 
 	govalidator "gopkg.in/asaskevich/govalidator.v4"
 )
@@ -55,6 +58,30 @@ func IsMacAddress(mac string) bool {
 	}
 
 	return true
+}
+
+// ToHexadecimalMac to Hexadecimal Mac address with upper character
+func ToHexadecimalMac(macStr string) (string, error) {
+	macRet := ""
+	var err error
+	if IsMacAddress(macStr) == false {
+		err = errors.New("mac source is invalid")
+
+		return macRet, err
+	}
+
+	macBytes := make([]byte, 12)
+	for i := 0; i < len(macStr); i++ {
+		if macStr[i] == '.' || macStr[i] == ':' {
+			continue
+		} else {
+			macBytes = append(macBytes, byte(macStr[i]))
+		}
+	}
+
+	macRet = string(macBytes)
+	macRet = strings.ToUpper(macRet)
+	return string(macBytes), nil
 }
 
 // GetKeyValueSign create KuaiChon sign by source
