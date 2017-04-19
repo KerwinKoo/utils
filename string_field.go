@@ -21,6 +21,42 @@ func IsPhoneNumber(value string) bool {
 	return true
 }
 
+// IsMacAddress check mac is valid or not
+// Only allowed format:
+// 		01:23:45:67:89:AB
+//		01.23.45.67.89.AB
+// 		0123456789AB
+func IsMacAddress(mac string) bool {
+
+	if govalidator.IsMAC(mac) == true {
+		macLenMax := len("01:23:45:67:89:ab")
+		if len(mac) > macLenMax {
+			return false
+		}
+
+		dotFieldLen := 0
+		for i := 0; i < len(mac); i++ {
+			if mac[i] == '-' {
+				return false
+			}
+
+			if mac[i] == '.' {
+				if dotFieldLen > 2 {
+					return false
+				}
+				dotFieldLen = 0
+			}
+			dotFieldLen++
+		}
+	} else {
+		if len(mac) != len("0123456789AB") || govalidator.IsHexadecimal(mac) == false {
+			return false
+		}
+	}
+
+	return true
+}
+
 // GetKeyValueSign create KuaiChon sign by source
 // Md5-digitl sign (Lower case to upper case) format:
 // eg:
