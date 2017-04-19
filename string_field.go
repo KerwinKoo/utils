@@ -30,7 +30,6 @@ func IsPhoneNumber(value string) bool {
 //		01.23.45.67.89.AB
 // 		0123456789AB
 func IsMacAddress(mac string) bool {
-
 	if govalidator.IsMAC(mac) == true {
 		macLenMax := len("01:23:45:67:89:ab")
 		if len(mac) > macLenMax {
@@ -52,7 +51,11 @@ func IsMacAddress(mac string) bool {
 			dotFieldLen++
 		}
 	} else {
-		if len(mac) != len("0123456789AB") || govalidator.IsHexadecimal(mac) == false {
+		if len(mac) != len("0123456789AB") {
+			return false
+		}
+
+		if govalidator.IsHexadecimal(mac) == false {
 			return false
 		}
 	}
@@ -70,7 +73,7 @@ func ToHexadecimalMac(macStr string) (string, error) {
 		return macRet, err
 	}
 
-	macBytes := make([]byte, 12)
+	var macBytes []byte
 	for i := 0; i < len(macStr); i++ {
 		if macStr[i] == '.' || macStr[i] == ':' {
 			continue
@@ -81,7 +84,7 @@ func ToHexadecimalMac(macStr string) (string, error) {
 
 	macRet = string(macBytes)
 	macRet = strings.ToUpper(macRet)
-	return string(macBytes), nil
+	return macRet, nil
 }
 
 // GetKeyValueSign create KuaiChon sign by source
