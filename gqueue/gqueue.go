@@ -76,6 +76,28 @@ func (q *Queue) Query(queryFunc interface{}) *list.Element {
 	return nil
 }
 
+// QueryAll query all items from queue, all items should meet the condition of queryFunc
+func (q *Queue) QueryAll(queryFunc interface{}) []interface{} {
+	var rets []interface{}
+	q.sem.Lock()
+	e := q.list.Front()
+	defer q.sem.Unlock()
+	size := q.Size()
+
+	if size > 0 {
+		if reflect.TypeOf(queryFunc) == reflect.TypeOf(tFunc) {
+			for e != nil {
+				if queryFunc.(func(val interface{}) bool)(e.Value) {
+					rets = append(rets, e.Value)
+				}
+			}
+			e = e.Next()
+		}
+	}
+
+	return rets
+}
+
 // DelConditionAll delete all the elements which macthc the confition-query func
 // The elements deleted whill be pushed into the result list []*list.Element
 func (q *Queue) DelConditionAll(queryFunc interface{}) []interface{} {
