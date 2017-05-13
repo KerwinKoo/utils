@@ -90,13 +90,14 @@ func GetBuffer2URL(buffer []byte, url string, contentFormat string) ([]byte, err
 	return responseBody, nil
 }
 
-// PostURI2URL post URI as ?a=12&b=44 to URL
+// SendURI2URL post URI as ?a=12&b=44 to URL
 // return: result byte, uri combined result, connect or post error
-func PostURI2URL(uris map[string]string, url string) ([]byte, string, error) {
+func SendURI2URL(uris map[string]string, url, method string) ([]byte, string, error) {
 	var responseBody []byte
-	req, err := http.NewRequest("POST", url, nil)
+	var uriStr string
+	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
-		panic(err)
+		return responseBody, uriStr, err
 	}
 
 	query := req.URL.Query()
@@ -106,7 +107,7 @@ func PostURI2URL(uris map[string]string, url string) ([]byte, string, error) {
 	}
 
 	req.URL.RawQuery = query.Encode()
-	uriStr := req.URL.String()
+	uriStr = req.URL.String()
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	client := &http.Client{}

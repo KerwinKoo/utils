@@ -117,3 +117,29 @@ func GetKeyValueSign(signKeySort []string, signData map[string]string) (string, 
 
 	return resultMing, resultMd5
 }
+
+// GetMd5Sign create KuaiChon sign by source
+// Md5-digitl sign (Lower case to upper case) format:
+// eg:
+// Md5("value1value2....")
+// return :
+//		clear text and MD5-32bit lower result
+func GetMd5Sign(signKeySort []string, signData map[string]string) (string, string) {
+	var buffer bytes.Buffer
+	i := 0
+
+	for i = 0; i < len(signKeySort); i++ {
+		for key, value := range signData {
+
+			if key == signKeySort[i] {
+				buffer.WriteString(value)
+				break
+			}
+		}
+	}
+
+	resultMing := buffer.String()
+	resultMd5 := MD5_32Lower(resultMing)
+
+	return resultMing, resultMd5
+}
