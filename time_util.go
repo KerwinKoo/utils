@@ -90,3 +90,12 @@ func GetTimeStempUnixInt64() int64 {
 
 	return ts
 }
+
+// GetTimeStempUnixInt get unix timestamp
+// return int64
+func GetTimeStempUnixInt() int {
+	t := time.Now()
+	ts := t.Unix()
+
+	return int(ts)
+}
