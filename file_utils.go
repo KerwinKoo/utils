@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"syscall"
 )
@@ -107,26 +108,44 @@ func ReadFileWithLock(path string) ([]byte, error) {
 	return fd, err
 }
 
-// Md5Checksum2File write the sha256sums of checkTargetFilename file
-// into md5Filename
-// checkTargetFilename: file need to be md5 checksum
-func Md5Checksum2File(checkTargetFilename, md5Filename string) {
+// FileMd5Checksum only check file's md5sum
+func FileMd5Checksum(checkTargetFilename string) ([]byte, error) {
 	file, err := os.Open(checkTargetFilename)
 	if err != nil {
 		log.Printf("Error on opening file: %s\n", checkTargetFilename)
-		return
+		return []byte(""), err
 	}
 
 	md5h := md5.New()
 	io.Copy(md5h, file)
 
 	//filename 	md5checksum
-	md5Result := fmt.Sprintf("%s\t%x\n", checkTargetFilename, md5h.Sum([]byte("")))
+	md5Result := md5h.Sum([]byte(""))
+
+	return md5Result, nil
+}
+
+// Md5Checksum2File write the sha256sums of checkTargetFilename file
+// into md5Filename
+// checkTargetFilename: file need to be md5 checksum
+func Md5Checksum2File(checkTargetFilename, md5Filename string) ([]byte, error) {
+	file, err := os.Open(checkTargetFilename)
+	if err != nil {
+		log.Printf("Error on opening file: %s\n", checkTargetFilename)
+		return []byte(""), err
+	}
+
+	md5h := md5.New()
+	io.Copy(md5h, file)
+
+	//md5checksum  file base name
+	fileBaseName := path.Base(checkTargetFilename)
+	md5Result := fmt.Sprintf("%x\t%s\n", md5h.Sum([]byte("")), fileBaseName)
 
 	md5File, err := os.OpenFile(md5Filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0664)
 	if err != nil {
 		log.Printf("Error on opening file: %s\n", md5Filename)
-		return
+		return []byte(""), err
 	}
 	defer md5File.Close()
 
@@ -136,8 +155,10 @@ func Md5Checksum2File(checkTargetFilename, md5Filename string) {
 	_, err = md5File.Write([]byte(md5Result)) //md5
 	if err != nil {
 		log.Printf("Error on writting file: %s\n", md5Filename)
-		return
+		return []byte(""), err
 	}
+
+	return []byte(md5Result), nil
 }
 
 // ListFiles return the file list of th path
