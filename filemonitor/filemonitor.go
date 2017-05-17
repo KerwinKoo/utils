@@ -15,6 +15,26 @@ const (
 	Chmod
 )
 
+func ChmodDo(path string, fu func()) (chan bool, error) {
+	return EventChangeDo(path, Chmod, fu)
+}
+
+func RenameDo(path string, fu func()) (chan bool, error) {
+	return EventChangeDo(path, Rename, fu)
+}
+
+func RemoveDo(path string, fu func()) (chan bool, error) {
+	return EventChangeDo(path, Remove, fu)
+}
+
+func CreateDo(path string, fu func()) (chan bool, error) {
+	return EventChangeDo(path, Create, fu)
+}
+
+func WriteDo(path string, fu func()) (chan bool, error) {
+	return EventChangeDo(path, Write, fu)
+}
+
 // EventChangeDo call fu func when event of target (defined by arg path,
 // file or files in directory)
 // return:
@@ -38,19 +58,11 @@ func EventChangeDo(path string, monitorOp fsnotify.Op, fu func()) (chan bool, er
 			case event := <-watcher.Events:
 				log.Println("event:", event)
 
-				if event.Op&Write == monitorOp {
-					fu()
-				}
-				if event.Op&Create == monitorOp {
-					fu()
-				}
-				if event.Op&Remove == monitorOp {
-					fu()
-				}
-				if event.Op&Rename == monitorOp {
-					fu()
-				}
-				if event.Op&Chmod == monitorOp {
+				if event.Op&Write == monitorOp ||
+					event.Op&Create == monitorOp ||
+					event.Op&Remove == monitorOp ||
+					event.Op&Rename == monitorOp ||
+					event.Op&Chmod == monitorOp {
 					fu()
 				}
 
