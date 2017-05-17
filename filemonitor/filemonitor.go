@@ -13,6 +13,7 @@ const (
 	Remove
 	Rename
 	Chmod
+	AllEvent
 )
 
 func ChmodDo(path string, fu func()) (chan bool, error) {
@@ -33,6 +34,10 @@ func CreateDo(path string, fu func()) (chan bool, error) {
 
 func WriteDo(path string, fu func()) (chan bool, error) {
 	return EventChangeDo(path, Write, fu)
+}
+
+func AllEventDo(path string, fu func()) (chan bool, error) {
+	return EventChangeDo(path, AllEvent, fu)
 }
 
 // EventChangeDo call fu func when event of target (defined by arg path,
@@ -57,8 +62,9 @@ func EventChangeDo(path string, monitorOp fsnotify.Op, fu func()) (chan bool, er
 			select {
 			case event := <-watcher.Events:
 				log.Println("event:", event)
-
-				if event.Op&Write == monitorOp ||
+				if monitorOp == AllEvent {
+					fu()
+				} else if event.Op&Write == monitorOp ||
 					event.Op&Create == monitorOp ||
 					event.Op&Remove == monitorOp ||
 					event.Op&Rename == monitorOp ||
