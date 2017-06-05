@@ -63,6 +63,11 @@ func IsMacAddress(mac string) bool {
 	return true
 }
 
+// IsBase64 return true if str is base64 encoded
+func IsBase64(str string) bool {
+	return govalidator.IsBase64(str)
+}
+
 // ToHexadecimalMac to Hexadecimal Mac address with upper character
 func ToHexadecimalMac(macStr string) (string, error) {
 	macRet := ""
