@@ -99,3 +99,10 @@ func GetTimeStempUnixInt() int {
 
 	return int(ts)
 }
+
+// GetTimeStempYmdHM get timeStamp format: "%Y%m%d%H%M"
+func GetTimeStempYmdHM() string {
+	t := time.Now()
+	timeStamp := StrfTime("%Y%m%d%H%M", t)
+	return timeStamp
+}
