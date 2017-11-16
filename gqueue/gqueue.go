@@ -110,12 +110,16 @@ func (q *Queue) DelConditionAll(queryFunc interface{}) []interface{} {
 	defer q.sem.Unlock()
 
 	e := q.list.Front()
+	ret := e
 	for e != nil {
 		if queryFunc.(func(val interface{}) bool)(e.Value) {
+			ret = e.Next()
 			removedValue := q.list.Remove(e)
 			delElements = append(delElements, removedValue)
+			e = ret
+		} else {
+			e = e.Next()
 		}
-		e = e.Next()
 	}
 	return delElements
 }
