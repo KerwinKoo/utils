@@ -125,7 +125,7 @@ func FileMd5Checksum(checkTargetFilename string) ([]byte, error) {
 	return md5Result, nil
 }
 
-// Md5Checksum2File write the sha256sums of checkTargetFilename file
+// Md5Checksum2File write the md5 sums of checkTargetFilename file
 // into md5Filename
 // checkTargetFilename: file need to be md5 checksum
 func Md5Checksum2File(checkTargetFilename, md5Filename string) ([]byte, error) {
