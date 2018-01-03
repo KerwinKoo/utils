@@ -2,9 +2,11 @@ package utils
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -133,4 +135,26 @@ func IPIsLocal(remoteIP, localIP string) bool {
 		return true
 	}
 	return false
+}
+
+// HTTPDownload Download file via HTTP
+func HTTPDownload(dlURL, localFileName string) (int64, error) {
+	if PathExist(localFileName) {
+		os.Remove(localFileName)
+	}
+
+	localOut, err := os.Create(localFileName)
+	if err != nil {
+		return 0, err
+	}
+	defer localOut.Close()
+
+	resp, err := http.Get(dlURL)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	n, err := io.Copy(localOut, resp.Body)
+	return n, err
 }
